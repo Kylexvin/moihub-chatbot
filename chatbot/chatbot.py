@@ -1,11 +1,16 @@
-# app.py
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from db import get_answer, add_knowledge, get_all_knowledge
+import os
 
 app = Flask(__name__)
 # Enable CORS for all routes - this is crucial for your React frontend
 CORS(app)
+
+@app.route("/", methods=["GET"])
+def home():
+    """Route for the root URL to avoid 404 errors."""
+    return jsonify({"status": "API is running", "endpoints": ["/chat", "/train", "/knowledge"]})
 
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -43,4 +48,7 @@ def knowledge():
     return jsonify(knowledge_data)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Get port from environment variable or use 5000 as default
+    port = int(os.environ.get('PORT', 5000))
+    # Use 0.0.0.0 to make the server publicly available
+    app.run(host='0.0.0.0', port=port, debug=False)
